@@ -11,6 +11,13 @@ const ChatWindow = styled.div`
   color: white;
   position: relative;
   font-size: 2rem;
+
+  header {
+    position: fixed;
+    z-index: 1000000;
+    background-image: linear-gradient(90deg, transparent, skyblue);
+  }
+
   input {
     font-size: 2rem;
     margin: 1rem;
@@ -42,6 +49,7 @@ const AvengerComponent = styled.div.attrs({
   })
 })`
   position: absolute;
+  z-index: -1000;
   padding: 2rem;
   background: red;
   color: white;
@@ -192,7 +200,7 @@ class HelloWorld extends Component {
             : ""}
           <div>
             {!Avengers.findOne({ player: Meteor.userId() }) ? (
-              <header style={{ zIndex: 1000000 }}>
+              <header>
                 <button onClick={() => this.joinBattle()}>
                   Join the party
                 </button>
