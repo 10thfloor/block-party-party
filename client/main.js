@@ -12,10 +12,32 @@ const ChatWindow = styled.div`
   position: relative;
   font-size: 2rem;
 
+  .wtf {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    z-index: 10000;
+  }
+
+  .help {
+    position: absolute;
+    bottom: 0;
+    left: 2rem;
+  }
+
+  .help span {
+    color: royalblue;
+  }
+
   header {
     position: fixed;
     z-index: 1000000;
     background-image: linear-gradient(90deg, transparent, skyblue);
+  }
+
+  header p {
+    margin: 0;
+    padding-left: 1rem;
   }
 
   input {
@@ -80,7 +102,6 @@ class Avenger extends Component {
   constructor() {
     super();
     this.chatMessage = React.createRef();
-    this.player = {};
   }
 
   sendMessage(e) {
@@ -122,6 +143,7 @@ class Avenger extends Component {
             type="text"
             ref={this.chatMessage}
             onKeyPress={e => this.sendMessage(e)}
+            placeholder="Type a message..."
             autoFocus
           />
         ) : (
@@ -147,7 +169,7 @@ class HelloWorld extends Component {
     this.avengername = React.createRef();
     this.player = {};
     this.state = {
-      m: false
+      help: false
     };
   }
 
@@ -187,13 +209,27 @@ class HelloWorld extends Component {
 
   joinBattle() {
     if (this.avengername.current.value > 200) return;
-    Meteor.call("block.party", this.avengername.current.value || "Anon");
+    Meteor.call("block.party", this.avengername.current.value || "🌮");
+  }
+
+  toggleHelp() {
+    this.setState({ help: !this.state.help });
   }
 
   render() {
     return (
       <React.Fragment>
         <ChatWindow>
+          <a
+            href=""
+            className="wtf"
+            onClick={e => {
+              e.preventDefault();
+              this.toggleHelp();
+            }}
+          >
+            {!this.state.help ? "wtf?" : "OK!"}
+          </a>
           {this.props.avengers.length
             ? this.props.avengers.map(a => <Avenger key={a._id} avenger={a} />)
             : ""}
@@ -208,9 +244,24 @@ class HelloWorld extends Component {
                   type="text"
                   ref={this.avengername}
                   placeholder="Enter a name..."
+                  onKeyDown={e => {
+                    console.log(e.key);
+                    if (e.key === "Enter") {
+                      this.joinBattle();
+                    }
+                  }}
                   autoFocus
                 />
               </header>
+            ) : (
+              ""
+            )}
+            {this.state.help ? (
+              <p className="help">
+                <span>Move: </span> Arrows <span>Write a message: </span> "`"
+                (Back-tick key) <span>Send message: </span> "Enter"{" "}
+                <span>Leave party: </span> "-"
+              </p>
             ) : (
               ""
             )}
