@@ -1,8 +1,21 @@
 import { Meteor } from "meteor/meteor";
 
-Meteor.startup(() => {});
+Meteor.startup(() => {
+  Avengers.remove({});
+});
 
 Meteor.methods({
+  "block.party"(name) {
+    Avengers.insert({
+      name,
+      message: "",
+      showMessage: false,
+      x: 200,
+      y: 200,
+      player: Meteor.userId(),
+      bg: "#" + Math.floor(Math.random() * 16777215).toString(16)
+    });
+  },
   "chat.message"({ player, message }) {
     if (message.length > 200) return;
     Avengers.update({ player }, { $set: { message } });

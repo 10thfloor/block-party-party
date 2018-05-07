@@ -27,11 +27,17 @@ const ChatWindow = styled.div`
     letter-spacing: 1px;
     font-weight: bold;
   }
+
+  button:hover {
+    cursor: pointer;
+    color: red;
+    background: white;
+  }
 `;
 
 const AvengerComponent = styled.div.attrs({
   style: ({ x, y, bg }) => ({
-    transform: `translateX({x}px) translateY(${y}px)`,
+    transform: `translateX(${x}px) translateY(${y}px)`,
     background: `${bg}`
   })
 })`
@@ -39,7 +45,6 @@ const AvengerComponent = styled.div.attrs({
   padding: 2rem;
   background: red;
   color: white;
-  transform: translateX(${props => props.x}px) translateY(${props => props.y}px);
   h1 {
     margin: 0;
     padding: 0;
@@ -54,6 +59,7 @@ const AvengerMessage = styled.div`
   position: relative;
   background: white;
   color: red;
+  font-weight: bold;
   padding: 2rem;
   margin-top: 1rem;
   font-size: 4rem;
@@ -67,6 +73,7 @@ class Avenger extends Component {
   constructor() {
     super();
     this.chatMessage = React.createRef();
+    this.player = {};
   }
 
   sendMessage(e) {
@@ -131,26 +138,23 @@ class HelloWorld extends Component {
   constructor() {
     super();
     this.avengername = React.createRef();
+    this.player = {};
     this.state = {
       m: false
     };
   }
 
+  move() {
+    if ("ArrowUp" in this.player) Meteor.call("move.up", Meteor.userId());
+    if ("ArrowDown" in this.player) Meteor.call("move.down", Meteor.userId());
+    if ("ArrowRight" in this.player) Meteor.call("move.right", Meteor.userId());
+    if ("ArrowLeft" in this.player) Meteor.call("move.left", Meteor.userId());
+  }
+
   componentDidMount() {
     window.onkeydown = e => {
+      this.player[e.key] = true;
       switch (e.key) {
-        case "ArrowUp":
-          Meteor.call("move.up", Meteor.userId());
-          break;
-        case "ArrowDown":
-          Meteor.call("move.down", Meteor.userId());
-          break;
-        case "ArrowLeft":
-          Meteor.call("move.left", Meteor.userId());
-          break;
-        case "ArrowRight":
-          Meteor.call("move.right", Meteor.userId());
-          break;
         case "`":
           Meteor.call("show.message", {
             player: Meteor.userId(),
@@ -163,19 +167,20 @@ class HelloWorld extends Component {
           break;
       }
     };
+    window.onkeyup = e => {
+      delete this.player[e.key];
+    };
+
+    window.requestAnimationFrame(() =>
+      setInterval(() => {
+        this.move();
+      }, 30)
+    );
   }
 
   joinBattle() {
     if (this.avengername.current.value > 200) return;
-    Avengers.insert({
-      name: this.avengername.current.value || "Avenger",
-      message: "",
-      showMessage: false,
-      x: 200,
-      y: 200,
-      player: Meteor.userId(),
-      bg: "#" + Math.floor(Math.random() * 16777215).toString(16)
-    });
+    Meteor.call("block.party", this.avengername.current.value || "Anon");
   }
 
   render() {
@@ -184,10 +189,10 @@ class HelloWorld extends Component {
         <ChatWindow>
           {this.props.avengers.length
             ? this.props.avengers.map(a => <Avenger key={a._id} avenger={a} />)
-            : "No Avengers"}
+            : ""}
           <div>
             {!Avengers.findOne({ player: Meteor.userId() }) ? (
-              <React.Fragment>
+              <header style={{ zIndex: 1000000 }}>
                 <button onClick={() => this.joinBattle()}>
                   Join the party
                 </button>
@@ -195,9 +200,10 @@ class HelloWorld extends Component {
                 <input
                   type="text"
                   ref={this.avengername}
-                  plaecholder="Enter your avenger name..."
+                  placeholder="Enter a name..."
+                  autoFocus
                 />
-              </React.Fragment>
+              </header>
             ) : (
               ""
             )}
