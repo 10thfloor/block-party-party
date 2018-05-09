@@ -200,11 +200,9 @@ class HelloWorld extends Component {
       delete this.player[e.key];
     };
 
-    window.requestAnimationFrame(() =>
-      setInterval(() => {
-        this.move();
-      }, 30)
-    );
+    setInterval(() => {
+      window.requestAnimationFrame(this.move.bind(this));
+    }, 30);
   }
 
   joinBattle() {
