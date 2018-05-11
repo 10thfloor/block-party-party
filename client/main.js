@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { Meteor } from "meteor/meteor";
-import { render } from "react-dom";
-import { withTracker } from "meteor/react-meteor-data";
-import styled from "styled-components";
+import React, { Component } from 'react'
+import { Meteor } from 'meteor/meteor'
+import { render } from 'react-dom'
+import { withTracker } from 'meteor/react-meteor-data'
+import styled from 'styled-components'
 
 const ChatWindow = styled.div`
   width: 100vw;
@@ -62,7 +62,7 @@ const ChatWindow = styled.div`
     color: red;
     background: white;
   }
-`;
+`
 
 const AvengerComponent = styled.div.attrs({
   style: ({ x, y, bg }) => ({
@@ -82,7 +82,7 @@ const AvengerComponent = styled.div.attrs({
     font-size: 2rem;
     padding: 0.5rem;
   }
-`;
+`
 
 const AvengerMessage = styled.div`
   position: relative;
@@ -96,187 +96,177 @@ const AvengerMessage = styled.div`
     font-size: 2rem;
     padding: 0.5rem;
   }
-`;
+`
 
 class Avenger extends Component {
-  constructor() {
-    super();
-    this.chatMessage = React.createRef();
+  constructor () {
+    super()
+    this.chatMessage = React.createRef()
   }
 
-  sendMessage(e) {
-    if (!this.chatMessage.current.value) return;
-    if (e.key === "Enter") {
-      Meteor.call("show.message", {
+  sendMessage (e) {
+    if (!this.chatMessage.current.value) return
+    if (e.key === 'Enter') {
+      Meteor.call('show.message', {
         player: Meteor.userId(),
         showMessage: false
-      });
-      Meteor.call("chat.message", {
+      })
+      Meteor.call('chat.message', {
         player: Meteor.userId(),
         message: this.chatMessage.current.value
-      });
+      })
       setTimeout(() => {
-        Meteor.call("chat.message", {
+        Meteor.call('chat.message', {
           player: Meteor.userId(),
-          message: ""
-        });
-      }, 2000);
+          message: ''
+        })
+      }, 2000)
     }
   }
 
-  render() {
-    return this.props.avenger ? (
-      <AvengerComponent
+  render () {
+    return this.props.avenger
+      ? <AvengerComponent
         y={this.props.avenger.y}
         x={this.props.avenger.x}
         bg={this.props.avenger.bg}
-      >
+        >
         <h1>{this.props.avenger.name}</h1>
-        {this.props.avenger.message ? (
-          <AvengerMessage>{this.props.avenger.message}</AvengerMessage>
-        ) : (
-          ""
-        )}
+        {this.props.avenger.message
+            ? <AvengerMessage>{this.props.avenger.message}</AvengerMessage>
+            : ''}
         {this.props.avenger.showMessage &&
-        this.props.avenger.player === Meteor.userId() ? (
-          <input
-            type="text"
-            ref={this.chatMessage}
-            onKeyPress={e => this.sendMessage(e)}
-            placeholder="Type a message..."
-            autoFocus
-          />
-        ) : (
-          ""
-        )}
+            this.props.avenger.player === Meteor.userId()
+            ? <input
+              type='text'
+              ref={this.chatMessage}
+              onKeyPress={e => this.sendMessage(e)}
+              placeholder='Type a message...'
+              autoFocus
+              />
+            : ''}
       </AvengerComponent>
-    ) : (
-      ""
-    );
+      : ''
   }
 }
 
 const AvengerData = withTracker(({ name }) => {
-  const avenger = Avengers.find({ name }).fetch();
+  const avenger = Avengers.find({ name }).fetch()
   return {
     avenger: avenger[0]
-  };
-})(Avenger);
+  }
+})(Avenger)
 
 class HelloWorld extends Component {
-  constructor() {
-    super();
-    this.avengername = React.createRef();
-    this.player = {};
+  constructor () {
+    super()
+    this.avengername = React.createRef()
+    this.player = {}
     this.state = {
       help: false
-    };
+    }
   }
 
-  move() {
-    if ("ArrowUp" in this.player) Meteor.call("move.up", Meteor.userId());
-    if ("ArrowDown" in this.player) Meteor.call("move.down", Meteor.userId());
-    if ("ArrowRight" in this.player) Meteor.call("move.right", Meteor.userId());
-    if ("ArrowLeft" in this.player) Meteor.call("move.left", Meteor.userId());
+  move () {
+    if ('ArrowUp' in this.player) Meteor.call('move.up', Meteor.userId())
+    if ('ArrowDown' in this.player) Meteor.call('move.down', Meteor.userId())
+    if ('ArrowRight' in this.player) Meteor.call('move.right', Meteor.userId())
+    if ('ArrowLeft' in this.player) Meteor.call('move.left', Meteor.userId())
   }
 
-  componentDidMount() {
+  componentDidMount () {
     window.onkeydown = e => {
-      this.player[e.key] = true;
+      this.player[e.key] = true
       switch (e.key) {
-        case "`":
-          Meteor.call("show.message", {
+        case '`':
+          Meteor.call('show.message', {
             player: Meteor.userId(),
             showMessage: !Avengers.findOne({ player: Meteor.userId() })
               .showMessage
-          });
-          break;
-        case "-":
-          Meteor.call("remove.avenger", Meteor.userId());
-          break;
+          })
+          break
+        case '-':
+          Meteor.call('remove.avenger', Meteor.userId())
+          break
       }
-    };
+    }
     window.onkeyup = e => {
-      delete this.player[e.key];
-    };
+      delete this.player[e.key]
+    }
 
     setInterval(() => {
-      window.requestAnimationFrame(this.move.bind(this));
-    }, 30);
+      window.requestAnimationFrame(this.move.bind(this))
+    }, 30)
   }
 
-  joinBattle() {
-    if (this.avengername.current.value > 200) return;
-    Meteor.call("block.party", this.avengername.current.value || "🌮");
+  joinBattle () {
+    if (this.avengername.current.value > 200) return
+    Meteor.call('block.party', this.avengername.current.value || '🌮')
   }
 
-  toggleHelp() {
-    this.setState({ help: !this.state.help });
+  toggleHelp () {
+    this.setState({ help: !this.state.help })
   }
 
-  render() {
+  render () {
     return (
       <React.Fragment>
         <ChatWindow>
           <a
-            href=""
-            className="wtf"
+            href=''
+            className='wtf'
             onClick={e => {
-              e.preventDefault();
-              this.toggleHelp();
+              e.preventDefault()
+              this.toggleHelp()
             }}
           >
-            {!this.state.help ? "wtf?" : "OK!"}
+            {!this.state.help ? 'wtf?' : 'OK!'}
           </a>
           {this.props.avengers.length
             ? this.props.avengers.map(a => <Avenger key={a._id} avenger={a} />)
-            : ""}
+            : ''}
           <div>
-            {!Avengers.findOne({ player: Meteor.userId() }) ? (
-              <header>
+            {!Avengers.findOne({ player: Meteor.userId() })
+              ? <header>
                 <button onClick={() => this.joinBattle()}>
-                  Join the party
-                </button>
-                Your Name:{" "}
+                    Join the party
+                  </button>
+                  Your Name:{' '}
                 <input
-                  type="text"
+                  type='text'
                   ref={this.avengername}
-                  placeholder="Enter a name..."
+                  placeholder='Enter a name...'
                   onKeyDown={e => {
-                    console.log(e.key);
-                    if (e.key === "Enter") {
-                      this.joinBattle();
+                    console.log(e.key)
+                    if (e.key === 'Enter') {
+                      this.joinBattle()
                     }
                   }}
                   autoFocus
-                />
+                  />
               </header>
-            ) : (
-              ""
-            )}
-            {this.state.help ? (
-              <p className="help">
+              : ''}
+            {this.state.help
+              ? <p className='help'>
                 <span>Move: </span> Arrows <span>Write a message: </span> "`"
-                (Back-tick key) <span>Send message: </span> "Enter"{" "}
+                  (Back-tick key) <span>Send message: </span> "Enter"{' '}
                 <span>Leave party: </span> "-"
-              </p>
-            ) : (
-              ""
-            )}
+                </p>
+              : ''}
           </div>
         </ChatWindow>
       </React.Fragment>
-    );
+    )
   }
 }
 
 const ChatAppContainer = withTracker(() => {
-  const avengers = Avengers.find().fetch();
+  const avengers = Avengers.find().fetch()
   return {
     avengers
-  };
-})(HelloWorld);
+  }
+})(HelloWorld)
 
 Meteor.startup(() => {
-  render(<ChatAppContainer />, document.getElementById("app"));
-});
+  render(<ChatAppContainer />, document.getElementById('app'))
+})
