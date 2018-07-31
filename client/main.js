@@ -45,6 +45,7 @@ const ChatWindow = styled.div`
     margin: 1rem;
     padding: 0.5rem;
   }
+  
   button {
     background: red;
     color: white;

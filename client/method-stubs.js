@@ -1,4 +1,8 @@
 Meteor.methods({
+  'do.something' ({ player, messages }) {
+    // TODO: Implement this method!
+    console.warn("Method 'do.something' not implemented.")
+  },
   'chat.message' ({ player, message }) {
     if (message.length > 200) return
     Avengers.update({ player }, { $set: { message } })
